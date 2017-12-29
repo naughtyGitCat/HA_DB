@@ -1,12 +1,16 @@
 #!/bin/bash
 
+CONSUL1=192.168.1.120
+CONSUL2=192.168.1.121
+CONSUL3=192.168.1.8
+
 IP=$(ip addr|egrep '/24'|tr -s ' '|awk -F ' ' '{print $2}'|awk -F '/' '{print $1}')
 NAME=`hostname`
 
 function depend_install()
 {
 	printf "安装依赖软件...."
-	yum -y install unzip lrzsz
+	yum -y install unzip lrzsz bind-utils
 }
 
 function download_binary()
@@ -43,6 +47,8 @@ function write_conf()
     "advertise_addr": "$IP",
     "bind_addr": "$IP",
     "domain": "consul",
+    "bootstrap_expect": 2,
+    "server": true,
     "datacenter": "consul-cluster",
     "data_dir": "/data/consul",
     "enable_syslog": true,
@@ -54,9 +60,9 @@ function write_conf()
         "max_stale": "15s"
     },
     "retry_join": [
-        "192.168.100.195",
-        "192.168.100.196",
-		"192.168.100.197"
+        "$CONSUL1",
+        "$CONSUL2",
+		"$CONSUL3"
     ],
     "retry_interval": "10s",
     "skip_leave_on_interrupt": true,
@@ -66,7 +72,7 @@ function write_conf()
         "http": 8500
     },
     "recursors": [
-        "114.114.114.114"
+        "192.168.1.1"
     ],
     "rejoin_after_leave": true,
     "addresses": {
@@ -74,15 +80,16 @@ function write_conf()
         "dns": "0.0.0.0"
     }
 }
+
 EOF
 }
 
 function hostname_resolve()
 {
 cat  >/etc/resolv.conf<<EOF
-nameserver 192.168.100.195
-nameserver 192.168.100.196
-nameserver 192.168.100.197
+nameserver $CONSUL1
+nameserver $CONSUL2
+nameserver $CONSUL3
 EOF
 cat >>/etc/hosts<<EOF
 $IP $NAME
@@ -91,14 +98,17 @@ EOF
 
 function intention()
 {
-printf "服务集群地址为....192.168.100.195"
-printf "服务集群地址为....192.168.100.196"
-printf "服务集群地址为....192.168.100.197"
+printf "服务集群地址为....$CONSUL1"
+printf "服务集群地址为....$CONSUL2"
+printf "服务集群地址为....$CONSUL3"
 printf "本机地址为$IP"
+printf "使用方法：step1:cd /data/consul "
+printf "使用方法：step2:nohup consul agent -config-dir /etc/consul/ -server -ui -rejoin &"
 }
 
 depend_install
 download_binary
 unzip_reg
 write_conf
+hostname_resolve
 intention

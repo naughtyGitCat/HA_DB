@@ -1,0 +1,16 @@
+{
+  "service": {
+    "id":"3301",
+    "name": "MySQL3301",
+    "tags": ["primary"],
+    "address": "",
+    "port": 3301,
+    "enable_tag_override": false,
+    "checks": [
+      {
+        "script": "/root/check/check_3301.sh",
+        "interval": "10s"
+      }
+    ]
+  }
+}

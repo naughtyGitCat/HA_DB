@@ -1,0 +1,30 @@
+{
+  "services":[
+  {
+   "id":"3333master",
+   "name":"redis-master",
+   "tags":["master"],
+   "address":"192.168.1.104",
+   "port":3333,
+   "checks":[
+              {
+                  "args":["/root/check/redis.sh","3333","master"],
+                  "interval":"1s"
+              }
+            ]
+  },
+  {
+	   "id":"3333slave",
+	   "name":"redis-slave",
+		 "tags":["slave"],
+		 "address":"192.168.1.104",
+		 "port":3333,
+		 "checks":[
+			           {
+			                "args":["/root/check/redis_3333.sh","3333","slave"],
+			                "interval":"1s"
+			           }
+					    ]
+  }
+ ]
+}

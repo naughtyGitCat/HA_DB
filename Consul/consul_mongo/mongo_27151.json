@@ -1,0 +1,30 @@
+{
+  "services":[
+  {
+   "id":"27151master",
+   "name":"mongo-master",
+   "tags":["master"],
+   "address":"192.168.1.151",
+   "port":27151,
+   "checks":[
+              {
+                  "args":["/root/check/mongo_isMaster.sh","27151","true"],
+                  "interval":"1s"
+              }
+            ]
+  },
+  {
+	   "id":"27151slave",
+	   "name":"mongo-slave",
+		 "tags":["slave"],
+		 "address":"192.168.1.151",
+		 "port":27151,
+		 "checks":[
+			           {
+			                "args":["/root/check/mongo_isMaster.sh","27151","false"],
+			                "interval":"1s"
+			           }
+					    ]
+  }
+ ]
+}
